@@ -133,7 +133,7 @@ public class SecurityConfiguration extends KeycloakWebSecurityConfigurerAdapter 
                 .antMatchers(HttpMethod.POST, "/ban").hasRole("ADMIN")
                 .antMatchers(HttpMethod.DELETE, "/ban").hasRole("ADMIN")
                 .antMatchers(HttpMethod.POST, "/registration").permitAll()
-                .antMatchers("/socket").hasRole("USER")
+                .antMatchers("/socket/**").permitAll()
                 .anyRequest().permitAll()
                 .and()
                 // logout settings - copied from KeycloakWebSecurityConfigurerAdapter
