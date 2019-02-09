@@ -3,10 +3,12 @@ package com.infopulse.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.infopulse.dto.ReceiveMessage;
 import com.infopulse.dto.SendMessage;
+import com.infopulse.service.controllerservices.BanControllerService;
 import com.infopulse.service.controllerservices.WebSocketServiceController;
 import com.infopulse.validation.ReceiveMessageGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
@@ -26,6 +28,9 @@ public class WebSocketController extends TextWebSocketHandler {
     private WebSocketServiceController webSocketService;
 
     @Autowired
+    BanControllerService banControllerService;
+
+    @Autowired
     Validator validator;
 
     private Map<String, WebSocketSession> activeUsers = new ConcurrentHashMap<>();
@@ -35,6 +40,12 @@ public class WebSocketController extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session)
             throws Exception {
+        if(banControllerService.verifyForBan((String)session.getAttributes().get("login"))){
+            SendMessage sendMessage = createSendMessage("system", "You are banned", "PRIVATE");
+            session.sendMessage(new TextMessage(mapper.writeValueAsString(sendMessage)));
+
+            return;
+        }
         activeUsers.put((String)session.getAttributes().get("login"), session);
         List<SendMessage> messageList = webSocketService.getAllMessage((String)session.getAttributes().get("login"));
         messageList.stream()
@@ -47,7 +58,11 @@ public class WebSocketController extends TextWebSocketHandler {
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message)
             throws IOException {
-        String jsonString = message.getPayload();
+        if(banControllerService.verifyForBan((String)session.getAttributes().get("login"))){
+            session.close();
+            return;
+        }
+         String jsonString = message.getPayload();
         ReceiveMessage receiveMessage = mapper.readValue(jsonString, ReceiveMessage.class);
         Set<ConstraintViolation<ReceiveMessage>> violations = validator.validate(receiveMessage, ReceiveMessageGroup.class);
 
@@ -80,6 +95,7 @@ public class WebSocketController extends TextWebSocketHandler {
                 SendMessage sendMessage = createSendMessage((String)session.getAttributes().get("login"), "",  "LOGOUT");
                 sendPrivateMessage((String)session.getAttributes().get("login"), sendMessage);
                 removeFromActiveUsers((String)session.getAttributes().get("login"));
+                sendAllChangeActiveList();
                 break;
             }
 
