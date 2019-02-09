@@ -7,7 +7,10 @@ spring:
     url: jdbc:postgresql://localhost/chat_db
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: validate
+  liquibase:
+    change-log: classpath:db/changelog-master.xml
+
 
   cloud:
     stream:

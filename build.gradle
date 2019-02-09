@@ -1,11 +1,20 @@
 buildscript {
     repositories {
+        jcenter()
         mavenCentral()
+        maven {
+            url("https://plugins.gradle.org/m2/")
+        }
+        maven{
+            url("https://repo.spring.io/libs-milestone")
+        }
+
     }
     dependencies {
         classpath 'io.spring.gradle:dependency-management-plugin:1.0.6.RELEASE'
         classpath("org.springframework.boot:spring-boot-gradle-plugin:2.1.1.RELEASE")
         classpath 'org.postgresql:postgresql:42.2.3'
+        classpath "org.liquibase:liquibase-gradle-plugin:1.2.4"
     }
 }
 
@@ -14,8 +23,9 @@ plugins {
     id 'war'
     id "org.springframework.boot" version "2.1.1.RELEASE"
     id "io.spring.dependency-management" version "1.0.6.RELEASE"
-}
 
+}
+apply plugin: 'liquibase'
 group 'com.agroculture'
 version '1.0-SNAPSHOT'
 
@@ -81,5 +91,6 @@ dependencies {
 
     compile 'com.google.guava:guava:21.0'
     compile 'com.jayway.jsonpath:json-path:2.2.0'
+    compile 'org.liquibase:liquibase-core:3.6.3'
 
 }

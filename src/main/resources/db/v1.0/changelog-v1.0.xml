@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+    <changeSet author="alex" id="changelog-1.0" runOnChange="true">
+
+        <createTable tableName="chatuser">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKeyName="pk_chatuser"
+                             primaryKey="true"
+                             nullable="false"/>
+            </column>
+
+            <column name="last_visit" type="timestamp">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="login" type="varchar(255)"/>
+
+            <column name="name" type="varchar(255)"/>
+
+        </createTable>
+
+        <createTable tableName="messages">
+
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKeyName="pk_messages"
+                             primaryKey="true"
+                             nullable="false"/>
+            </column>
+
+            <column name="body" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+
+
+            <column name="create_time" type="timestamp">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="receiver_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_user_messages_receiver"
+                             references="chatuser(id)"/>
+            </column>
+
+            <column name="sender_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_user_messages_sender"
+                             references="chatuser(id)"/>
+            </column>
+
+        </createTable>
+
+        <createTable tableName="ban">
+
+            <column name="id" type="bigint">
+                <constraints primaryKeyName="pk_ban" primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="chatuser_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_user_ban"
+                             references="chatuser(id)"/>
+            </column>
+
+
+        </createTable>
+    </changeSet>
+
+
+
+
+
+
+</databaseChangeLog>
