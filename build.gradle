@@ -93,4 +93,8 @@ dependencies {
     compile 'com.jayway.jsonpath:json-path:2.2.0'
     compile 'org.liquibase:liquibase-core:3.6.3'
 
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.springframework.boot:spring-boot-starter-test'
+    testCompile 'org.apache.commons:commons-lang3:3.0'
+
 }
